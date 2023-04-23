@@ -6,12 +6,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type App struct {
-	DB   *sql.DB
-	Port string
+	DB     *sql.DB
+	Port   string
+	Router *mux.Router
 }
 
 func (a *App) Initialize() {
@@ -19,7 +21,13 @@ func (a *App) Initialize() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	a.Router = mux.NewRouter()
 	a.DB = db
+	a.initializeRoutes()
+}
+
+func (a *App) initializeRoutes() {
+	a.Router.HandleFunc("/", helloWorld)
 }
 
 func helloWorld(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +35,6 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) Run() {
-	http.HandleFunc("/", helloWorld)
 	fmt.Println("Server started and listening on port ", a.Port)
-	log.Fatal(http.ListenAndServe(a.Port, nil))
+	log.Fatal(http.ListenAndServe(a.Port, a.Router))
 }

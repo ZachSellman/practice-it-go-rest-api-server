@@ -1,7 +1,7 @@
 package main
 
 import (
-	"example.com/backend"
+	"github.com/ZachSellman/practice-it-go-rest-api-server/src/backend"
 )
 
 func main() {
